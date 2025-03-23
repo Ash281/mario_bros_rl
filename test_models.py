@@ -1,3 +1,10 @@
+"""
+This script tests the performance of trained models on the Super Mario Bros environment.
+
+Author: Ashvin Valentine
+Date: 01/03/2025
+"""
+
 import os
 import numpy as np
 import pandas as pd
