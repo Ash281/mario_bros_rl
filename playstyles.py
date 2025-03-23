@@ -1,3 +1,10 @@
+"""
+This file contains the custom reward functions for the different playstyles in the game.
+
+Author: Ashvin Valentine
+Date: 01/03/2025
+"""
+
 from gym import Wrapper
 
 class RewardWrapper(Wrapper):
