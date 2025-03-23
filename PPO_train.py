@@ -30,7 +30,7 @@ import numpy as np
 from training_callback import TrainAndLoggingCallback
 from wrappers import apply_wrappers
 
-# Parse command line arguments - playstyle and continue training option
+# parser args
 parser = argparse.ArgumentParser(description='Train Mario with different playstyles')
 parser.add_argument('playstyle', type=str, choices=['speedrunner', 'collector', 'enemy_killer'],
                     help='Playstyle to train')
@@ -40,24 +40,24 @@ args = parser.parse_args()
 
 ENV_NAME = 'SuperMarioBros-1-1-v0'
 
-# Setup directories
+# setup directories
 CHECKPOINT_DIR = f'/content/drive/MyDrive/mario_rl_v2/train/{args.playstyle}/'
 LOG_DIR = f'/content/drive/MyDrive/mario_rl_v2/logs/{args.playstyle}/'
 METRICS_FILE = f'/content/drive/MyDrive/mario_rl_v2/metrics/{args.playstyle}_metrics.csv'
 
-# Create directories
+# create directories
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 os.makedirs(LOG_DIR, exist_ok=True)
 os.makedirs(os.path.dirname(METRICS_FILE), exist_ok=True)
 
-# Initialize metrics file
+# init metrics file
 with open(METRICS_FILE, 'w') as f:
     f.write("step,avg_reward,completion_rate,frames_per_level,coins,enemies\n")
 
 initial_step = 0
 if args.continue_from:
     try:
-        # Extract number from filename like PPO_speedrunner_model_800000
+        # extract number from filename
         initial_step = int(args.continue_from.split('_')[-1])
         print(f"Continuing from step {initial_step}")
     except:
@@ -77,15 +77,13 @@ callback = TrainAndLoggingCallback(
 env = gym_super_mario_bros.make(
     ENV_NAME, render_mode='rgb_array', apply_api_compatibility=True)
 env = JoypadSpace(env, RIGHT_ONLY)
-env = apply_wrappers(env, style=args.playstyle)  # Use collector reward wrapper
+env = apply_wrappers(env, style=args.playstyle) 
 JoypadSpace.reset = lambda self, **kwargs: self.env.reset(**kwargs)
 
 # Load existing model or create new one
 if args.continue_from:
     print(f"Loading existing model from {args.continue_from}")
     model = PPO.load(args.continue_from, env=env)
-    
-    # The key step: don't reset training progress counter
     total_timesteps = 1000000
     print(f"Continuing training {args.playstyle} agent for {total_timesteps} timesteps")
     model.learn(total_timesteps=total_timesteps, callback=callback, reset_num_timesteps=False)
