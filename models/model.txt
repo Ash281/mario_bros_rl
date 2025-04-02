@@ -1,1 +1,2 @@
-models
+Pre-trained models can be found here:
+https://drive.google.com/drive/folders/1L7OcZLMycptXQ4wYct2l7l5AaDikciv3?usp=drive_link
